@@ -1,0 +1,38 @@
+FROM xshan1/docker-python-opencv-ffmpeg:py3-cv3.4.0
+
+MAINTAINER theresa.shan@intel.com
+
+ARG http_proxy
+
+ARG https_proxy
+
+ENV http_proxy $http_proxy
+
+ENV https_proxy $https_proxy
+
+RUN echo $https_proxy
+
+RUN echo $http_proxy
+
+# Uncomment the two lines below if you wish to use an Ubuntu mirror repository
+# that is closer to you (and hence faster). The 'sources.list' file inside the
+# 'tools/docker/' folder is set to use one of Ubuntu's official mirror in Taiwan.
+# You should update this file based on your own location. For a list of official
+# Ubuntu mirror repositories, check out: https://launchpad.net/ubuntu/+archivemirrors
+#COPY sources.list /etc/apt
+RUN sed -i 's/http:\/\/archive\.ubuntu\.com\/ubuntu\//http:\/\/mirrors\.163\.com\/ubuntu\//g' /etc/apt/sources.list
+RUN rm /var/lib/apt/lists/* -vf
+
+RUN apt-get update && apt-get -y install vim net-tools python3-setuptools openssh-client vim net-tools iproute2 iputils-ping xinetd telnetd dnsutils
+
+RUN pip3 install --proxy=${https_proxy} redis==2.10.0 paho-mqtt requests Flask Flask-Cors Flask-SSE pymongo gunicorn gevent pytz
+
+RUN mkdir /cloudapp
+
+WORKDIR /cloudapp
+
+COPY . .
+
+ENV http_proxy ""
+
+ENV https_proxy ""

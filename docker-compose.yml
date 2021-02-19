@@ -1,0 +1,63 @@
+---
+version: '2.2'
+services:
+  stream-web:
+    build: 
+      context: .
+      dockerfile: Dockerfile.app
+      args:
+        http_proxy: ""
+        https_proxy: ""
+    restart: "always"
+    ports:
+      - "5000:5000"
+    command: "python3 app.py"
+    environment:
+      - "REDIS_HOST=redis"
+      - "MOSQUITTO_HOST=mosquitto"
+      - "DETECTION_SET=77,47"
+    depends_on:
+      - redis
+      - mosquitto
+    cpus: 2.0
+    #mem_limit: 4096m
+  stream-buffer:
+    build: 
+      context: .
+      dockerfile: Dockerfile.app
+      args:
+        http_proxy: ""
+        https_proxy: ""
+    command: bash -c  "/bin/sleep 2 && python3 webcam_redis.py"
+    restart: "always" 
+    #devices:
+    #  - "/dev/video0:/dev/video0"
+    environment:
+      - "CAMERA_SRC=http://10.239.82.83:8090/facstream.mjpeg"
+      - "REDIS_HOST=redis"
+    depends_on:
+      - redis
+    #mem_limit: 7168m
+  redis:
+    image: redis
+    #command: ["redis-server", "--appendonly", "yes"]
+    hostname: redis
+    ports:
+      - "6379:6379"
+    #volumes:
+    #  - redis-data:/data
+  mosquitto:
+    image: eclipse-mosquitto
+    ulimits:
+      nofile:
+        soft: 200000
+        hard: 200000
+    expose:
+      - "1883"
+      - "9001"
+    ports:
+      - "1883:1883"
+      - "9001:9001"
+    volumes:
+      - ./mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf
+

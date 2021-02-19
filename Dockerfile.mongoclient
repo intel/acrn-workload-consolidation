@@ -1,0 +1,35 @@
+FROM ubuntu:16.04
+
+MAINTAINER theresa.shan@intel.com
+
+ARG http_proxy
+
+ARG https_proxy
+
+ENV http_proxy $http_proxy
+
+ENV https_proxy $https_proxy
+
+RUN echo $https_proxy
+
+RUN echo $http_proxy
+
+# Uncomment the two lines below if you wish to use an Ubuntu mirror repository
+# that is closer to you (and hence faster). The 'sources.list' file inside the
+# 'tools/docker/' folder is set to use one of Ubuntu's official mirror in Taiwan.
+# You should update this file based on your own location. For a list of official
+# Ubuntu mirror repositories, check out: https://launchpad.net/ubuntu/+archivemirrors
+#COPY sources.list /etc/apt
+#RUN rm /var/lib/apt/lists/* -vf
+
+RUN apt-get update && apt-get -y install apt-transport-https vim net-tools iproute2 iputils-ping xinetd telnetd dnsutils
+
+RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 9DA31620334BD75D9DCB49F368818C72E52529D4
+
+RUN echo "deb [ arch=amd64,arm64  ] https://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/4.0 multiverse" | tee /etc/apt/sources.list.d/mongodb-org-4.0.list
+
+RUN apt-get update && apt-get install -y mongodb-org-shell
+
+ENV http_proxy ""
+
+ENV https_proxy ""

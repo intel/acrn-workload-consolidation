@@ -1,0 +1,96 @@
+---
+version: '2.1'
+services:
+  redis:
+    image: redis
+    ports:
+      - "6379:6379"
+  rest-api:
+    build:
+      context: .
+      dockerfile: Dockerfile.vc
+      args:
+        http_proxy: "http://10.240.252.20:911"
+        https_proxy: "http://10.240.252.20:911"
+    restart: "always"
+    ports:
+      - 3000:3000
+    command: "gunicorn rest_api:app --worker-class gevent --bind 0.0.0.0:3000"
+    #command: "python3 rest_api.py"
+    environment:
+      - "REDIS_HOST=redis"
+      - "MONGO_HOST=mongo"
+    depends_on:
+      mongo:
+        condition: service_healthy
+    volumes:
+      - /video:/cloudapp/video
+  dashboard:
+    build:
+      context: .
+      dockerfile: Dockerfile.yarn
+      args:
+        http_proxy: "http://10.240.252.20:911"
+        https_proxy: "http://10.240.252.20:911"
+    restart: "always"
+    ports:
+      - 8080:8080
+    command: ["/bin/bash", "-c", "/dashboard/vue-table/startup.sh && yarn dev"] 
+    volumes:
+      - ./vue-table/src/config.js:/dashboard/vue-table/src/config.js
+    depends_on:
+      - rest-api
+  video-compressor:
+    build:
+      context: .
+      dockerfile: Dockerfile.vc
+      args:
+        http_proxy: "http://10.240.252.20:911"
+        https_proxy: "http://10.240.252.20:911"
+    restart: "always"
+    command: ["/usr/bin/python3", "-u", "video_compressor.py"]
+    environment:
+      - "REDIS_HOST=10.239.82.110"
+      - "MOSQUITTO_HOST=10.239.82.110"
+      - "REST_API=rest-api"
+    depends_on:
+      - rest-api
+    volumes:
+      - /video:/cloudapp/video
+  mongo:
+    image: mongo
+    hostname: mongo
+    restart: always
+    ports:
+      - 27017:27017
+    command: "--replSet 'rs'"
+    volumes:
+      - /data:/data/db
+    healthcheck:
+        test: ["CMD", "mongo", "localhost:27017/admin?replicaSet=rs", "--eval", "db.runCommand('ping').ok"]
+        interval: 5s
+        timeout: 10s
+        retries: 10
+  # This configures the MongoDB replicaset
+  mongosetup:
+    build:
+      context: .
+      dockerfile: Dockerfile.mongoclient
+      args:
+        http_proxy: "http://10.240.252.20:911"
+        https_proxy: "http://10.240.252.20:911" 
+    volumes:
+      - ./mongo:/scripts
+    entrypoint: [ "/scripts/setup.sh" ]
+    #entrypoint: "tail -f /dev/null" 
+    depends_on:
+      mongo:
+        condition: service_healthy 
+  mongo-express:
+    image: mongo-express
+    restart: always
+    ports:
+      - 8081:8081
+    depends_on:
+      mongo:
+        condition: service_healthy
