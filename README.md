@@ -1,4 +1,5 @@
-# Industrial Edge to Cloud Demo
+# Workload Consolidation - Industrial Edge to Cloud Demo
+This repo hosts demo code designed to showcase the workload consolidation feature of [Project ACRN](https://projectacrn.org/) on edge devices.
 
 ## Demo Video
 [![Workload-Consolidation-Demo-Video](https://img.youtube.com/vi/Z0HUBUHzBbk/0.jpg)](https://youtu.be/Z0HUBUHzBbk)
