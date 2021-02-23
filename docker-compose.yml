@@ -33,7 +33,7 @@ services:
     #devices:
     #  - "/dev/video0:/dev/video0"
     environment:
-      - "CAMERA_SRC=http://10.239.82.83:8090/facstream.mjpeg"
+      - "CAMERA_SRC=http://<ip-camera>:8090/facstream.mjpeg"
       - "REDIS_HOST=redis"
     depends_on:
       - redis

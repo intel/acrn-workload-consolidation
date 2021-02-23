@@ -10,8 +10,8 @@ services:
       context: .
       dockerfile: Dockerfile.vc
       args:
-        http_proxy: "http://10.240.252.20:911"
-        https_proxy: "http://10.240.252.20:911"
+        http_proxy: "<proxy>"
+        https_proxy: "<proxy>"
     restart: "always"
     ports:
       - 3000:3000
@@ -30,8 +30,8 @@ services:
       context: .
       dockerfile: Dockerfile.yarn
       args:
-        http_proxy: "http://10.240.252.20:911"
-        https_proxy: "http://10.240.252.20:911"
+        http_proxy: "<proxy>"
+        https_proxy: "<proxy>"
     restart: "always"
     ports:
       - 8080:8080
@@ -45,13 +45,13 @@ services:
       context: .
       dockerfile: Dockerfile.vc
       args:
-        http_proxy: "http://10.240.252.20:911"
-        https_proxy: "http://10.240.252.20:911"
+        http_proxy: "<proxy>"
+        https_proxy: "<proxy>"
     restart: "always"
     command: ["/usr/bin/python3", "-u", "video_compressor.py"]
     environment:
-      - "REDIS_HOST=10.239.82.110"
-      - "MOSQUITTO_HOST=10.239.82.110"
+      - "REDIS_HOST=<ip-redis-host>"
+      - "MOSQUITTO_HOST=<ip-mosquitto-host>"
       - "REST_API=rest-api"
     depends_on:
       - rest-api
@@ -77,8 +77,8 @@ services:
       context: .
       dockerfile: Dockerfile.mongoclient
       args:
-        http_proxy: "http://10.240.252.20:911"
-        https_proxy: "http://10.240.252.20:911" 
+        http_proxy: "<proxy>"
+        https_proxy: "<proxy>" 
     volumes:
       - ./mongo:/scripts
     entrypoint: [ "/scripts/setup.sh" ]

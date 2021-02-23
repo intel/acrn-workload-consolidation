@@ -6,14 +6,14 @@ This repo hosts demo code designed to showcase the workload consolidation featur
 
 ## Getting ready on Edge and Cloud
 The demo has been containerized as two deployments for edge and cloud respectively. Before the deployment, here are some prerequisites.  
-1. Clone this repository locally: `git clone https://gitlab.devtools.intel.com/ssp-demos/ACRN/industrial-edge-demo.git`
+1. Clone this repository locally: `git clone https://github.com/intel/acrn-workload-consolidation`
 2. Make sure [Docker](https://www.docker.com/) is running: `sudo systemctl start docker`. If you have not installed Docker yet, please refer to the [installation guide](https://docs.docker.com/install/linux/docker-ce/ubuntu/) to set up docker
 3. Follow these on-line instructions: [Docker Compose installation](https://docs.docker.com/compose/install/) and have docker-compose installed
-4. Put yourself in the cloned folder: `cd industrial-edge-demo`
+4. Put yourself in the cloned folder: `cd acrn-workload-consolidation`
 
 ## Set up services on edge
 There are four services running on the edge device: stream-web, stream-buffer, redis and mosquitto. Here are the steps to start the deployment:
-1. Setup proxy in `docker-compose.yml` file if you are building in Intel network and build service images:
+1. Setup proxy in `docker-compose.yml` file if you are behind a network proxy and build service images:
 ```
 sudo docker-compose -f docker-compose.yml build
 ```
@@ -53,9 +53,9 @@ sudo /usr/local/bin/docker-compose down
 
 ## Set up services on the Cloud:
 There are seven services running on the Cloud: mongo, redis, mongosetup, mongo-express, rest-api, video-compressor, dashboard. Here are the steps to start the deployment:
-1. Setup proxy in `docker-compose-cloud.yml` file if you are building in Intel network and build service images:
+1. Setup proxy in `docker-compose-cloud.yml` file if you are behind a network proxy and build service images:
 ```
-cd industrial-edge-demo
+cd acrn-workload-consolidation
 sudo docker-compose -f docker-compose-cloud.yml build
 ```
 Or the images could be pulled from Dockerhub:
@@ -108,8 +108,8 @@ sudo docker-compose -f docker-compose-cloud.yml up -d
 The agent watches the real-time changes on the cyclic test log file and sends the accumulated result to the Cloud by mosquitto service. 
 1. Checkout the repo on the SOS
 ```
-git clone https://gitlab.devtools.intel.com/ssp-demos/ACRN/industrial-edge-demo.git
-cd industrial-edge-demo
+git clone https://github.com/intel/acrn-workload-consolidation
+cd acrn-workload-consolidation
 ```
 2. Make sure that `Python >= 3.5` has been installed as well as the python dependencies
 ```
